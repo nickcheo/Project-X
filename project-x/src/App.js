@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-do
 import Home from './pages/Home';
 import About from './pages/About';
 import Fuck from './pages/Fuck';
+import Fuck2 from './pages/Fuck2';
 // import Contact from './pages/Contact';
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
         <Route  path="/" element={<Home/>} />
         <Route  path="/about" element={<About/>} />
         <Route  path="/fuck" element={<Fuck/>} />
+        <Route  path="/fuck2" element={<Fuck2/>} />
       </Routes>
       </Router>
     </div>

@@ -16,14 +16,16 @@ function SliderQuestion() {
     // Do something with the slider value
 
     // console.log('Slider value: ${value}');
-    history('/fuck2');
+    console.log(`Slider value: ${value}`);
+    history('/');
+    
     
   }
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center' }}>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, maxHeight: '60vh' }}>
-        <h2 style={{ fontSize: '24px', textAlign: 'center' }}>How much do you like Men?</h2>
+        <h2 style={{ fontSize: '24px', textAlign: 'center' }}>How much do you like Women?</h2>
         <Slider value={value} onChange={handleChange} style={{ width: '300px' }} />
         <button type="submit">Submit</button>
       </form>
