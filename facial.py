@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
-import pyvhr
+import pyVHR as vhr
+import mediapipe as mp
 
 # Set up video capture
 cap = cv2.VideoCapture(0)
@@ -9,7 +10,7 @@ cap = cv2.VideoCapture(0)
 x, y, w, h = 200, 100, 200, 100
 
 # Create PyVHR object
-pyvhr_engine = pyvhr.PyVHR()
+pyvhr_engine = vhr.PyVHR()
 
 while True:
     # Read frame from video capture
