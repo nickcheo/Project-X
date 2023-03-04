@@ -1,15 +1,15 @@
 import cv2
 import numpy as np
-import pychrom
+import pyvhr
 
 # Set up video capture
 cap = cv2.VideoCapture(0)
 
-# Create PyChrom object
-pc = pychrom.PyChrom()
-
 # Set ROI for forehead
 x, y, w, h = 200, 100, 200, 100
+
+# Create PyVHR object
+pyvhr_engine = pyvhr.PyVHR()
 
 while True:
     # Read frame from video capture
@@ -33,8 +33,8 @@ while True:
         roi_gray = gray[y:y+h, x:x+w]
         roi_color = frame[y:y+h, x:x+w]
 
-        # Apply PyChrom to estimate heart rate
-        hr = pc.get_heart_rate(roi_color, (x, y, w, h), show_video=False)
+        # Apply PyVHR to estimate heart rate
+        hr = pyvhr_engine.get_heart_rate(roi_gray, fps=30)
 
         # Display heart rate on frame
         cv2.putText(frame, f"Heart rate: {hr:.2f} bpm", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
