@@ -1,16 +1,15 @@
 import cv2
 import numpy as np
-import pyVHR as vhr
-import mediapipe as mp
+import pyvhr
 
-# Set up video capture
+# Initialize the webcam
 cap = cv2.VideoCapture(0)
 
-# Set ROI for forehead
-x, y, w, h = 200, 100, 200, 100
+# Load the Haar Cascade classifier for face detection
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
 # Create PyVHR object
-pyvhr_engine = vhr.PyVHR()
+pyvhr_engine = pyvhr.PyVHR()
 
 while True:
     # Read frame from video capture
@@ -21,32 +20,41 @@ while True:
 
     # Convert the frame to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    if len(faces) == 0:
+        return None
+    (x, y, w, h) = faces[0]
+    return gray[y:y+w, x:x+h]
 
-    # Detect face using Haar cascade classifier
-    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-    faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+# Define a function to calculate the average pixel intensity of the ROI
+def average_pixel_intensity(roi):
+    if roi is None:
+        return None
+    return np.mean(roi)
 
-    # Draw rectangle around the face
-    for (x,y,w,h) in faces:
-        cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
+# Define a function to calculate the heart rate based on changes in the average pixel intensity over time
+def calculate_heart_rate(intensity_values, fps):
+    if intensity_values is None:
+        return None
+    peaks, _ = find_peaks(intensity_values, distance=fps*0.5)
+    if len(peaks) < 2:
+        return None
+    bpm = 60 * fps / np.diff(peaks).mean()
+    return bpm
 
-        # Extract ROI from forehead
-        roi_gray = gray[y:y+h, x:x+w]
-        roi_color = frame[y:y+h, x:x+w]
-
-        # Apply PyVHR to estimate heart rate
-        hr = pyvhr_engine.get_heart_rate(roi_gray, fps=30)
-
-        # Display heart rate on frame
-        cv2.putText(frame, f"Heart rate: {hr:.2f} bpm", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
-
-    # Display the resulting frame
-    cv2.imshow('frame',frame)
-
-    # Exit on 'q' key press
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+# Loop through the webcam frames and call the above functions to detect the face, calculate the average pixel intensity, and calculate the heart rate
+intensity_values = []
+while True:
+    ret, frame = cap.read()
+    roi = detect_face(frame)
+    intensity = average_pixel_intensity(roi)
+    intensity_values.append(intensity)
+    bpm = calculate_heart_rate(intensity_values, cap.get(cv2.CAP_PROP_FPS))
+    cv2.putText(frame, f"BPM: {bpm:.0f}", (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+    cv2.imshow("Heart Rate Detection", frame)
+    if cv2.waitKey(1) == ord("q"):
         break
 
-# Release video capture and close all windows
+# Release the webcam and close the window
 cap.release()
 cv2.destroyAllWindows()
