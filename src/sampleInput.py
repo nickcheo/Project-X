@@ -1,19 +1,15 @@
 import time
 import numpy as np
 
-# l = ['1.2', '4.5']
-# n = np.array(float[l])
+while True:
+    with open('output.txt', 'r') as input_file:
+        # read the last 5 lines of the file
+        lines = input_file.readlines()[-10:]
+        float_list = [float(x) for x in lines]
 
-print(n)
+        # process the lines
+        avgFearTemp = np.mean(float_list)
+        print(avgFearTemp)
 
-# while True:
-#     with open('output.txt', 'r') as input_file:
-#         # read the last 10 lines of the file
-#         lines = input_file.readlines()[-10:]
-
-#         # process the lines
-#         for line in lines:
-#             process_data(line)
-
-#     # wait for some time before reading the file again
-#     time.sleep(1)
+    # wait for some time before reading the file again
+    time.sleep(1)
