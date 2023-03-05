@@ -5,22 +5,26 @@ import matplotlib.pyplot as plt
 import tkinter as tk
 import serial
 
-fearValues = []
-avgFear = []
 
 # Define the serial port and baud rate for the ESP32
 ser = serial.Serial('/dev/cu.usbserial-0001', 9600)
+current_value = 0
 
 def update_slider():
     # Display the current slider value in the label
     value_label.config(text=f"Slider value: {slider.get()}")
 
 def send_value():
+    global current_value
     # Send the current slider value to the ESP32
     value = slider.get()
+    current_value = value
     ser.write(str(value).encode())
     # Display a message to indicate that the value was sent
     status_label.config(text=f"Sent value: {value}")
+    # Close the window
+    window.destroy()
+
 
 # Create the main window
 window = tk.Tk()
@@ -30,6 +34,8 @@ slider = tk.Scale(window, from_=0, to=255, orient=tk.HORIZONTAL, command=update_
 slider.pack()
 
 # Create a label to display the current slider value
+# value = send_value()
+
 value_label = tk.Label(window, text="Slider value: 0")
 value_label.pack()
 
@@ -44,9 +50,10 @@ status_label.pack()
 window.mainloop()
 
 def on_closing():
+    fearValues = []
+    avgFear = []
     
     faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-
 
     cap = cv2.VideoCapture(0)
 
@@ -60,10 +67,12 @@ def on_closing():
             small_frame = cv2.resize(frame, (0, 0), fx=0.2, fy=0.2, interpolation = cv2.INTER_CUBIC)
 
             result = DeepFace.analyze(frame, actions = ['emotion'], enforce_detection=False)
-            print(result[0]['emotion']['fear'])
+
             fearValues.append(result[0]['emotion']['fear'])
-            avgFearTemp = np.mean(fearValues[-60:])
+            avgFearTemp = (np.mean(fearValues[-60:]) / 100.0) * current_value
             avgFear.append(avgFearTemp)
+            print(avgFearTemp)
+            ser.write(str(avgFearTemp).encode())
 
             f.write(str(avgFearTemp)+ '\n')
             f.flush()
@@ -101,4 +110,6 @@ def on_closing():
     plt.ylabel('fear')
     plt.show()
 root = tk.Tk()
-root.protocol("WM_DELETE_WINDOW", on_closing)
+root.protocol("WM_DELETE_WINDOW", on_closing())
+
+print(current_value)
