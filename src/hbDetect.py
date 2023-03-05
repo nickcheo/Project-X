@@ -1,33 +1,40 @@
-import pyVHR as vhr
-import numpy as np
-from pyVHR.analysis.pipeline import Pipeline
-from pyVHR.plot.visualize import *
-import plotly.express as px
-from pyVHR.utils.errors import getErrors, printErrors, displayErrors
+import cv2
+from deepface import DeepFace
 
-# params
-wsize = 6                  # window size in seconds
-roi_approach = 'patches'   # 'holistic' or 'patches'
-bpm_est = 'clustering'     # BPM final estimate, if patches choose 'medians' or 'clustering'
-method = 'cpu_CHROM'       # one of the methods implemented in pyVHR
+faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-# run
-pipe = Pipeline()          # object to execute the pipeline
-bvps, timesES, bpmES = pipe.run_on_video(videoFileName,
-                                        winsize=wsize, 
-                                        roi_method='convexhull',
-                                        roi_approach=roi_approach,
-                                        method=method,
-                                        estimate=bpm_est,
-                                        patch_size=0, 
-                                        RGB_LOW_HIGH_TH=(5,230),
-                                        Skin_LOW_HIGH_TH=(5,230),
-                                        pre_filt=True,
-                                        post_filt=True,
-                                        cuda=True, 
-                                        verb=True)
+cap = cv2.VideoCapture(0)
 
-# ERRORS
-RMSE, MAE, MAX, PCC, CCC, SNR = getErrors(bvps, fps, bpmES, bpmGT, timesES, timesGT)
-printErrors(RMSE, MAE, MAX, PCC, CCC, SNR)
-displayErrors(bpmES, bpmGT, timesES, timesGT)
+while True:
+    # Read the next frame
+    ret, frame = cap.read()
+
+    frame = cv2.flip(frame, 1)
+
+    small_frame = cv2.resize(frame, (0, 0), fx=0.2, fy=0.2, interpolation = cv2.INTER_CUBIC)
+
+    result = DeepFace.analyze(frame, actions = ['emotion'], enforce_detection=False)
+    print(result[0]['emotion'])
+
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    faces = faceCascade.detectMultiScale(gray,1.1,4)
+
+    for (x, y, w, h) in faces:
+        cv2.rectangle(small_frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+
+    font = cv2.FONT_HERSHEY_SIMPLEX
+
+    cv2.putText(small_frame,
+                str(result[0]['dominant_emotion']),
+                (50, 200),
+                font, 3,
+                (0, 0, 255),
+                2,
+                cv2.LINE_4)
+    cv2.imshow('Video', small_frame)
+
+    if cv2.waitKey(2) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
