@@ -10,16 +10,20 @@ function Fuck() {
    
 
   useEffect(() => {
-    // Set up WebSocket connection on component mount
-    const newSocket = new WebSocket('ws://172.20.10.4:80/websocket');
+    // Create a WebSocket connection
+    
+    const newSocket = new WebSocket('ws://172.20.10.4/websocket');
+    newSocket.onopen = () => {
+      console.log('WebSocket connection is open');
+    };
     setSocket(newSocket);
-
+    
+  
     // Clean up WebSocket connection on component unmount
     return () => {
-    if (newSocket.readyState === 1) {
-    
-      newSocket.close();
-    }
+      if (newSocket.readyState === 1) {
+        newSocket.close();
+      }
     };
   }, []);
 
@@ -31,7 +35,7 @@ function Fuck() {
     e.preventDefault();
     // Do something with the slider value
     console.log(`Slider value: ${value}`);
-  
+
     if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(value.toString());
       console.log("Sent slider value to server");
@@ -40,7 +44,6 @@ function Fuck() {
     }
     history('/');
   }
-  
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center' }}>
