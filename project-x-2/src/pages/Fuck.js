@@ -11,7 +11,7 @@ function Fuck() {
 
   useEffect(() => {
     // Set up WebSocket connection on component mount
-    const newSocket = new WebSocket('ws://172.20.10.4/websocket');
+    const newSocket = new WebSocket('ws://172.20.10.4:80/websocket');
     setSocket(newSocket);
 
     // Clean up WebSocket connection on component unmount
