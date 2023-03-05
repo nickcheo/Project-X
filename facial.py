@@ -41,7 +41,8 @@ while True:
     intensity = average_pixel_intensity(roi)
     intensity_values.append(intensity)
     bpm = calculate_heart_rate(intensity_values, cap.get(cv2.CAP_PROP_FPS))
-    cv2.putText(frame, f"BPM: {bpm:.0f}", (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+    if bpm is not None:
+        cv2.putText(frame, f"BPM: {bpm:.0f}", (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2, cv2.LINE_AA)
     cv2.imshow("Heart Rate Detection", frame)
     if cv2.waitKey(1) == ord("q"):
         break
