@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Fuck from './pages/Fuck';
 import Fuck2 from './pages/Fuck2';
+
 // import Contact from './pages/Contact';
 
 function App() {

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Slider from 'react-bootstrap-range-slider';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 
+
 function Fuck2() {
   const [value, setValue] = useState(0);
   const history = useNavigate();
