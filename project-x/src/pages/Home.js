@@ -1,16 +1,27 @@
-import React from 'react';
-import { Button } from 'react-bootstrap';
-import { NavLink } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'
 
 function Home() {
+  const [showButton, setShowButton] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowButton(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+  
+  const handleClick = () => {
+    console.log("am I here");
+    navigate('/questions');
+  }
   return (
-    <div className="container d-flex flex-column align-items-center justify-content-center" style={{ height: '100vh' }}>
-      <h1 className="text-center mb-4">Welcome to my website</h1>
-      <p className="text-center mb-4" style={{ fontSize: '20px' }}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut sed tellus vel sapien pellentesque vulputate ac sed est.</p>
-      <div className="text-center" style={{ marginTop: '10vh' }}>
-        <NavLink to="/Fuck">
-          <Button variant="primary" size="lg">Learn More</Button>
-        </NavLink>
+    <div className="d-flex justify-content-center align-items-center vh-100">
+      <div className="text-center" style={{ marginTop: '-400px'}}>
+        <h1 style={{ fontSize: '50px' }}>Productivity</h1>
+        <p>This is a productivity web app</p>
+        {showButton && <button className = "btn btn-primary" onClick={handleClick}>Let's Begin!</button>}
       </div>
     </div>
   );

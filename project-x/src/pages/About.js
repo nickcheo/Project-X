@@ -1,13 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'
 
-function About() {
+function Home() {
+  const [showButton, setShowButton] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowButton(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+  
+  const handleClick = () => {
+    console.log("am I here");
+    navigate('/about');
+  }
   return (
-    <div>
-      <h1>About Us</h1>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed malesuada tristique nibh, ac feugiat orci vestibulum sed. Morbi nec augue mauris. Donec id lacus eros. Nulla quis maximus lorem. Proin quis nulla nulla. Quisque ultrices velit nec turpis auctor ultricies. Duis gravida iaculis mi, vel viverra nibh ultrices a.</p>
-      <p>Etiam iaculis semper leo nec lacinia. Etiam rhoncus odio eget eros lacinia, vel tincidunt leo volutpat. Fusce ut enim vel purus ultrices malesuada a nec sapien. Fusce ut orci vitae odio fringilla vehicula. Integer vestibulum ligula sed suscipit iaculis. Duis nec enim mauris. Donec dictum auctor tellus, eu rutrum enim laoreet ut.</p>
+    <div className="d-flex justify-content-center align-items-center vh-100">
+      <div className="text-center" style={{ marginTop: '-400px'}}>
+        <h1 style={{ fontSize: '50px' }}>Productivity</h1>
+        <p>This is a productivity web app</p>
+        {showButton && <button className = "btn btn-primary" onClick={handleClick}>Let's Begin!</button>}
+      </div>
     </div>
   );
 }
 
-export default About;
+export default Home;
